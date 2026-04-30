@@ -35,10 +35,12 @@
 </template>
 
 <script setup>
+import { withoutTrailingSlash } from 'ufo'
+
 const route = useRoute()
 
 const { data: article } = await useAsyncData(`blog-${route.path}`, () =>
-  queryContent(route.path).findOne()
+  queryCollection('blog').path(withoutTrailingSlash(route.path)).first()
 )
 
 function formatDate(date) {

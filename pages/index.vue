@@ -76,8 +76,8 @@
         <div v-if="latestPosts && latestPosts.length" class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <NuxtLink
             v-for="article in latestPosts"
-            :key="article._path"
-            :to="article._path"
+            :key="article.path"
+            :to="article.path"
             class="card group"
           >
             <p class="text-xs text-gray-400 mb-2">{{ formatDate(article.date) }}</p>
@@ -97,7 +97,7 @@
 
 <script setup>
 const { data: latestPosts } = await useAsyncData('latest-posts', () =>
-  queryContent('/blog').sort({ date: -1 }).limit(3).find(),
+  queryCollection('blog').order('date', 'DESC').limit(3).all(),
   { default: () => [] }
 )
 

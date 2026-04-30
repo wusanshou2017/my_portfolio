@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white text-gray-900 antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  code, pre {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer components {
+  .container-main {
+    @apply max-w-5xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .btn-primary {
+    @apply inline-block px-6 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg
+           hover:bg-gray-700 transition-colors duration-200;
+  }
+
+  .btn-outline {
+    @apply inline-block px-6 py-2.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg
+           hover:border-gray-900 hover:text-gray-900 transition-colors duration-200;
+  }
+
+  .card {
+    @apply border border-gray-200 rounded-xl p-6 hover:border-gray-400 transition-colors duration-200;
+  }
+}
+
+@layer utilities {
+  .prose-blog h1 {
+    @apply text-3xl font-bold mt-10 mb-4;
+  }
+  .prose-blog h2 {
+    @apply text-2xl font-bold mt-8 mb-3;
+  }
+  .prose-blog h3 {
+    @apply text-xl font-semibold mt-6 mb-2;
+  }
+  .prose-blog p {
+    @apply text-gray-600 leading-relaxed mb-4;
+  }
+  .prose-blog ul, .prose-blog ol {
+    @apply text-gray-600 mb-4 pl-6;
+  }
+  .prose-blog li {
+    @apply mb-1;
+  }
+  .prose-blog ul li {
+    @apply list-disc;
+  }
+  .prose-blog ol li {
+    @apply list-decimal;
+  }
+  .prose-blog pre {
+    @apply bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4 text-sm;
+  }
+  .prose-blog code {
+    @apply text-sm;
+  }
+  .prose-blog p code {
+    @apply bg-gray-100 px-1.5 py-0.5 rounded text-sm;
+  }
+  .prose-blog a {
+    @apply text-gray-900 underline underline-offset-2 hover:text-gray-600;
+  }
+  .prose-blog blockquote {
+    @apply border-l-4 border-gray-300 pl-4 italic text-gray-500 my-4;
+  }
+  .prose-blog img {
+    @apply rounded-lg my-6;
+  }
+}

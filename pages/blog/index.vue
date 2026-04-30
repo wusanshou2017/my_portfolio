@@ -33,34 +33,32 @@
         </button>
       </div>
 
-      <ContentList path="/blog" :query="listQuery" v-slot="{ list }">
-        <div v-if="list.length" class="flex flex-col gap-6">
-          <NuxtLink
-            v-for="article in list"
-            :key="article._path"
-            :to="article._path"
-            class="card group block"
-          >
-            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
-              <h2 class="text-lg font-semibold group-hover:text-gray-600 transition-colors">
-                {{ article.title }}
-              </h2>
-              <span class="text-xs text-gray-400 whitespace-nowrap">{{ formatDate(article.date) }}</span>
-            </div>
-            <p class="text-sm text-gray-500 mb-3">{{ article.description }}</p>
-            <div class="flex flex-wrap gap-2">
-              <span
-                v-for="tag in article.tags"
-                :key="tag"
-                class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded"
-              >
-                {{ tag }}
-              </span>
-            </div>
-          </NuxtLink>
-        </div>
-        <p v-else class="text-gray-400 text-center py-20">暂无文章。</p>
-      </ContentList>
+      <div v-if="filteredPosts.length" class="flex flex-col gap-6">
+        <NuxtLink
+          v-for="article in filteredPosts"
+          :key="article._path"
+          :to="article._path"
+          class="card group block"
+        >
+          <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
+            <h2 class="text-lg font-semibold group-hover:text-gray-600 transition-colors">
+              {{ article.title }}
+            </h2>
+            <span class="text-xs text-gray-400 whitespace-nowrap">{{ formatDate(article.date) }}</span>
+          </div>
+          <p class="text-sm text-gray-500 mb-3">{{ article.description }}</p>
+          <div class="flex flex-wrap gap-2">
+            <span
+              v-for="tag in article.tags"
+              :key="tag"
+              class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded"
+            >
+              {{ tag }}
+            </span>
+          </div>
+        </NuxtLink>
+      </div>
+      <p v-else class="text-gray-400 text-center py-20">暂无文章。</p>
     </div>
   </div>
 </template>
@@ -68,26 +66,27 @@
 <script setup>
 const selectedTag = ref(null)
 
-const { data: allTags } = await useAsyncData('blog-tags', () =>
-  queryContent('/blog').only(['tags']).find()
+const { data: posts } = await useAsyncData('blog-posts', () =>
+  queryContent('/blog').sort({ date: -1 }).find(),
+  { default: () => [] }
 )
 
-const tagSet = computed(() => {
+const allTags = computed(() => {
   const tags = new Set()
-  if (allTags.value) {
-    allTags.value.forEach(item => {
+  if (posts.value) {
+    posts.value.forEach(item => {
       if (item.tags) item.tags.forEach(t => tags.add(t))
     })
   }
   return [...tags]
 })
 
-const listQuery = computed(() => {
-  const query = { sort: { date: -1 } }
-  if (selectedTag.value) {
-    query.where = { tags: { $contains: selectedTag.value } }
-  }
-  return query
+const filteredPosts = computed(() => {
+  if (!posts.value) return []
+  if (!selectedTag.value) return posts.value
+  return posts.value.filter(post =>
+    post.tags && post.tags.includes(selectedTag.value)
+  )
 })
 
 function formatDate(date) {

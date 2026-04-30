@@ -73,31 +73,34 @@
             全部文章 &rarr;
           </NuxtLink>
         </div>
-        <ContentList path="/blog" :query="{ limit: 3, sort: { date: -1 } }" v-slot="{ list }">
-          <div v-if="list.length" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <NuxtLink
-              v-for="article in list"
-              :key="article._path"
-              :to="article._path"
-              class="card group"
-            >
-              <p class="text-xs text-gray-400 mb-2">{{ formatDate(article.date) }}</p>
-              <h3 class="text-base font-semibold mb-2 group-hover:text-gray-600 transition-colors">
-                {{ article.title }}
-              </h3>
-              <p class="text-sm text-gray-500 line-clamp-2">
-                {{ article.description }}
-              </p>
-            </NuxtLink>
-          </div>
-          <p v-else class="text-gray-400 text-sm">暂无文章，敬请期待！</p>
-        </ContentList>
+        <div v-if="latestPosts && latestPosts.length" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <NuxtLink
+            v-for="article in latestPosts"
+            :key="article._path"
+            :to="article._path"
+            class="card group"
+          >
+            <p class="text-xs text-gray-400 mb-2">{{ formatDate(article.date) }}</p>
+            <h3 class="text-base font-semibold mb-2 group-hover:text-gray-600 transition-colors">
+              {{ article.title }}
+            </h3>
+            <p class="text-sm text-gray-500 line-clamp-2">
+              {{ article.description }}
+            </p>
+          </NuxtLink>
+        </div>
+        <p v-else class="text-gray-400 text-sm">暂无文章，敬请期待！</p>
       </div>
     </section>
   </div>
 </template>
 
 <script setup>
+const { data: latestPosts } = await useAsyncData('latest-posts', () =>
+  queryContent('/blog').sort({ date: -1 }).limit(3).find(),
+  { default: () => [] }
+)
+
 const projects = [
   {
     title: '个人作品集网站',

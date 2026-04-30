@@ -28,7 +28,7 @@
 
         <div class="space-y-4">
           <div class="border-l-2 border-gray-200 pl-4">
-            <h3 class="font-medium text-gray-900">全栈开发工程师</h3>
+            <h3 class="font-medium text-gray-900">AI 开发工程师</h3>
             <p class="text-sm text-gray-400">公司名称 | 2024 - 至今</p>
             <p class="text-sm mt-1">构建可扩展的 Web 应用和服务。</p>
           </div>

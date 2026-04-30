@@ -3,7 +3,7 @@
     <section class="py-20 sm:py-28">
       <div class="container-main">
         <div class="max-w-2xl">
-          <p class="text-sm text-gray-400 font-medium mb-4 tracking-wider uppercase">全栈开发者</p>
+          <p class="text-sm text-gray-400 font-medium mb-4 tracking-wider uppercase">AI 开发者</p>
           <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
             你好，我是 <span class="text-gray-400">你的名字</span>
           </h1>

@@ -2,7 +2,7 @@
   <div class="py-16">
     <div class="container-main max-w-3xl">
       <NuxtLink to="/blog" class="text-sm text-gray-400 hover:text-gray-900 transition-colors mb-8 inline-block">
-        &larr; Back to Blog
+        &larr; 返回博客
       </NuxtLink>
 
       <article v-if="article">
@@ -27,8 +27,8 @@
       </article>
 
       <div v-else class="text-center py-20">
-        <p class="text-gray-400">Post not found.</p>
-        <NuxtLink to="/blog" class="btn-primary mt-4 inline-block">Back to Blog</NuxtLink>
+        <p class="text-gray-400">文章未找到。</p>
+        <NuxtLink to="/blog" class="btn-primary mt-4 inline-block">返回博客</NuxtLink>
       </div>
     </div>
   </div>
@@ -43,7 +43,7 @@ const { data: article } = await useAsyncData(`blog-${route.path}`, () =>
 
 function formatDate(date) {
   if (!date) return ''
-  return new Date(date).toLocaleDateString('en-US', {
+  return new Date(date).toLocaleDateString('zh-CN', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -51,6 +51,6 @@ function formatDate(date) {
 }
 
 useHead(() => ({
-  title: article.value ? `${article.value.title} - Blog` : 'Post Not Found',
+  title: article.value ? `${article.value.title} - 博客` : '文章未找到',
 }))
 </script>

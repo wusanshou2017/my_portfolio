@@ -3,17 +3,17 @@
     <section class="py-20 sm:py-28">
       <div class="container-main">
         <div class="max-w-2xl">
-          <p class="text-sm text-gray-400 font-medium mb-4 tracking-wider uppercase">Full-Stack Developer</p>
+          <p class="text-sm text-gray-400 font-medium mb-4 tracking-wider uppercase">全栈开发者</p>
           <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-            Hi, I'm <span class="text-gray-400">Your Name</span>
+            你好，我是 <span class="text-gray-400">你的名字</span>
           </h1>
           <p class="text-lg text-gray-500 leading-relaxed mb-8">
-            A passionate developer who loves building clean, performant web applications.
-            I write about technology, share my projects, and document my learning journey.
+            一个热爱技术的开发者，喜欢构建简洁、高性能的 Web 应用。
+            在这里分享技术文章、展示项目作品，记录学习成长之路。
           </p>
           <div class="flex flex-wrap gap-4">
-            <NuxtLink to="/projects" class="btn-primary">View Projects</NuxtLink>
-            <NuxtLink to="/blog" class="btn-outline">Read Blog</NuxtLink>
+            <NuxtLink to="/projects" class="btn-primary">查看项目</NuxtLink>
+            <NuxtLink to="/blog" class="btn-outline">阅读博客</NuxtLink>
           </div>
         </div>
       </div>
@@ -22,9 +22,9 @@
     <section id="projects" class="py-16 border-t border-gray-200">
       <div class="container-main">
         <div class="flex items-center justify-between mb-10">
-          <h2 class="text-2xl font-bold">Featured Projects</h2>
-          <NuxtLink to="/blog" class="text-sm text-gray-400 hover:text-gray-900 transition-colors">
-            View all &rarr;
+          <h2 class="text-2xl font-bold">精选项目</h2>
+          <NuxtLink to="/projects" class="text-sm text-gray-400 hover:text-gray-900 transition-colors">
+            查看全部 &rarr;
           </NuxtLink>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -42,10 +42,10 @@
             </p>
             <div class="flex gap-4">
               <a :href="project.github" target="_blank" class="text-sm text-gray-400 hover:text-gray-900 transition-colors">
-                GitHub &rarr;
+                源码 &rarr;
               </a>
               <a v-if="project.demo" :href="project.demo" target="_blank" class="text-sm text-gray-400 hover:text-gray-900 transition-colors">
-                Demo &rarr;
+                演示 &rarr;
               </a>
             </div>
           </div>
@@ -55,7 +55,7 @@
 
     <section class="py-16 border-t border-gray-200">
       <div class="container-main">
-        <h2 class="text-2xl font-bold mb-10">Skills & Technologies</h2>
+        <h2 class="text-2xl font-bold mb-10">技能 & 技术栈</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           <div v-for="skill in skills" :key="skill.name" class="card text-center py-8">
             <span class="text-2xl mb-3 block">{{ skill.icon }}</span>
@@ -68,9 +68,9 @@
     <section class="py-16 border-t border-gray-200">
       <div class="container-main">
         <div class="flex items-center justify-between mb-10">
-          <h2 class="text-2xl font-bold">Latest Posts</h2>
+          <h2 class="text-2xl font-bold">最新文章</h2>
           <NuxtLink to="/blog" class="text-sm text-gray-400 hover:text-gray-900 transition-colors">
-            All posts &rarr;
+            全部文章 &rarr;
           </NuxtLink>
         </div>
         <ContentList path="/blog" :query="{ limit: 3, sort: { date: -1 } }" v-slot="{ list }">
@@ -90,7 +90,7 @@
               </p>
             </NuxtLink>
           </div>
-          <p v-else class="text-gray-400 text-sm">No posts yet. Stay tuned!</p>
+          <p v-else class="text-gray-400 text-sm">暂无文章，敬请期待！</p>
         </ContentList>
       </div>
     </section>
@@ -100,27 +100,27 @@
 <script setup>
 const projects = [
   {
-    title: 'Portfolio Website',
-    description: 'A personal portfolio built with Nuxt 3, featuring a blog system powered by Nuxt Content and styled with Tailwind CSS.',
+    title: '个人作品集网站',
+    description: '基于 Nuxt 3 构建的个人作品集，集成 Nuxt Content 博客系统和 Tailwind CSS 样式。',
     tags: ['Nuxt 3', 'Vue', 'Tailwind'],
     github: 'https://github.com/wusanshou2017/my_portfolio',
     demo: 'https://my-portfolio-psi-sooty-96.vercel.app',
   },
   {
-    title: 'Project Template',
-    description: 'A starter template for full-stack web applications. Replace this with your own project description.',
+    title: '项目模板',
+    description: '全栈 Web 应用启动模板。替换为你自己的项目描述。',
     tags: ['Vue', 'Node.js', 'MongoDB'],
     github: '#',
   },
   {
-    title: 'Open Source Contribution',
-    description: 'Contributed to various open source projects. Replace this with your actual contributions.',
+    title: '开源贡献',
+    description: '参与了多个开源项目的贡献。替换为你的实际贡献。',
     tags: ['Open Source', 'TypeScript'],
     github: '#',
   },
   {
-    title: 'API Service',
-    description: 'A RESTful API service built for learning purposes. Replace with your real project details.',
+    title: 'API 服务',
+    description: '用于学习的 RESTful API 服务。替换为你的真实项目详情。',
     tags: ['Express', 'PostgreSQL', 'Docker'],
     github: '#',
   },
@@ -139,7 +139,7 @@ const skills = [
 
 function formatDate(date) {
   if (!date) return ''
-  return new Date(date).toLocaleDateString('en-US', {
+  return new Date(date).toLocaleDateString('zh-CN', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -147,6 +147,6 @@ function formatDate(date) {
 }
 
 useHead({
-  title: 'My Portfolio - Developer & Blogger',
+  title: '个人作品集 - 开发者 & 博主',
 })
 </script>

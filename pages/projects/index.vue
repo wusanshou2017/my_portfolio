@@ -2,8 +2,8 @@
   <div class="py-16">
     <div class="container-main">
       <div class="mb-12">
-        <h1 class="text-3xl sm:text-4xl font-bold mb-4">Projects</h1>
-        <p class="text-gray-500">A collection of things I've built and contributed to.</p>
+        <h1 class="text-3xl sm:text-4xl font-bold mb-4">项目</h1>
+        <p class="text-gray-500">我构建和参与的项目集合。</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -21,10 +21,10 @@
           </p>
           <div class="flex gap-4">
             <a :href="project.github" target="_blank" class="text-sm text-gray-400 hover:text-gray-900 transition-colors">
-              GitHub &rarr;
+              源码 &rarr;
             </a>
             <a v-if="project.demo" :href="project.demo" target="_blank" class="text-sm text-gray-400 hover:text-gray-900 transition-colors">
-              Demo &rarr;
+              演示 &rarr;
             </a>
           </div>
         </div>
@@ -36,45 +36,45 @@
 <script setup>
 const projects = [
   {
-    title: 'Portfolio Website',
-    description: 'A personal portfolio built with Nuxt 3, featuring a blog system powered by Nuxt Content and styled with Tailwind CSS.',
+    title: '个人作品集网站',
+    description: '基于 Nuxt 3 构建的个人作品集，集成 Nuxt Content 博客系统和 Tailwind CSS 样式。',
     tags: ['Nuxt 3', 'Vue', 'Tailwind'],
     github: 'https://github.com/wusanshou2017/my_portfolio',
     demo: 'https://my-portfolio-psi-sooty-96.vercel.app',
   },
   {
-    title: 'Project Template',
-    description: 'A starter template for full-stack web applications. Replace this with your own project description.',
+    title: '项目模板',
+    description: '全栈 Web 应用启动模板。替换为你自己的项目描述。',
     tags: ['Vue', 'Node.js', 'MongoDB'],
     github: '#',
   },
   {
-    title: 'Open Source Contribution',
-    description: 'Contributed to various open source projects. Replace this with your actual contributions.',
+    title: '开源贡献',
+    description: '参与了多个开源项目的贡献。替换为你的实际贡献。',
     tags: ['Open Source', 'TypeScript'],
     github: '#',
   },
   {
-    title: 'API Service',
-    description: 'A RESTful API service built for learning purposes. Replace with your real project details.',
+    title: 'API 服务',
+    description: '用于学习的 RESTful API 服务。替换为你的真实项目详情。',
     tags: ['Express', 'PostgreSQL', 'Docker'],
     github: '#',
   },
   {
-    title: 'CLI Tool',
-    description: 'A command-line tool that automates common development workflows. Replace with your actual tool.',
+    title: 'CLI 工具',
+    description: '自动化常见开发工作流的命令行工具。替换为你的实际工具。',
     tags: ['Node.js', 'CLI', 'TypeScript'],
     github: '#',
   },
   {
-    title: 'Mobile App',
-    description: 'A cross-platform mobile application built with modern frameworks. Replace with your real project.',
+    title: '移动应用',
+    description: '使用现代框架构建的跨平台移动应用。替换为你的真实项目。',
     tags: ['React Native', 'Firebase'],
     github: '#',
   },
 ]
 
 useHead({
-  title: 'Projects',
+  title: '项目',
 })
 </script>

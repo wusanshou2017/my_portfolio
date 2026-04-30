@@ -2,8 +2,8 @@
   <div class="py-16">
     <div class="container-main">
       <div class="mb-12">
-        <h1 class="text-3xl sm:text-4xl font-bold mb-4">Blog</h1>
-        <p class="text-gray-500">Thoughts on web development, technology, and everything in between.</p>
+        <h1 class="text-3xl sm:text-4xl font-bold mb-4">博客</h1>
+        <p class="text-gray-500">关于 Web 开发、技术和学习心得的记录。</p>
       </div>
 
       <div class="mb-8 flex flex-wrap gap-2">
@@ -16,7 +16,7 @@
           ]"
           @click="selectedTag = null"
         >
-          All
+          全部
         </button>
         <button
           v-for="tag in allTags"
@@ -59,7 +59,7 @@
             </div>
           </NuxtLink>
         </div>
-        <p v-else class="text-gray-400 text-center py-20">No posts found.</p>
+        <p v-else class="text-gray-400 text-center py-20">暂无文章。</p>
       </ContentList>
     </div>
   </div>
@@ -92,7 +92,7 @@ const listQuery = computed(() => {
 
 function formatDate(date) {
   if (!date) return ''
-  return new Date(date).toLocaleDateString('en-US', {
+  return new Date(date).toLocaleDateString('zh-CN', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -100,6 +100,6 @@ function formatDate(date) {
 }
 
 useHead({
-  title: 'Blog',
+  title: '博客',
 })
 </script>

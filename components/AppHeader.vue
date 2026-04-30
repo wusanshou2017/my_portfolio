@@ -2,7 +2,7 @@
   <header class="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
     <div class="container-main flex items-center justify-between h-16">
       <NuxtLink to="/" class="text-lg font-bold tracking-tight">
-        Portfolio
+        个人主页
       </NuxtLink>
 
       <nav class="hidden sm:flex items-center gap-8">
@@ -51,9 +51,9 @@
 const mobileMenuOpen = ref(false)
 
 const navItems = [
-  { label: 'Home', path: '/' },
-  { label: 'Projects', path: '/#projects' },
-  { label: 'Blog', path: '/blog' },
-  { label: 'About', path: '/about' },
+  { label: '首页', path: '/' },
+  { label: '项目', path: '/#projects' },
+  { label: '博客', path: '/blog' },
+  { label: '关于', path: '/about' },
 ]
 </script>

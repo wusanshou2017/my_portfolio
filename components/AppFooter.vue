@@ -2,7 +2,7 @@
   <footer class="border-t border-gray-200 mt-20">
     <div class="container-main py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
       <p class="text-sm text-gray-400">
-        &copy; {{ new Date().getFullYear() }} Portfolio. All rights reserved.
+        &copy; {{ new Date().getFullYear() }} 个人作品集. 保留所有权利.
       </p>
       <div class="flex items-center gap-6">
         <a href="https://github.com/wusanshou2017" target="_blank" class="text-gray-400 hover:text-gray-900 transition-colors">

@@ -29,12 +29,6 @@ export default defineNuxtConfig({
     },
   },
 
-  content: {
-    markdown: {
-      anchorLinks: true,
-    },
-  },
-
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.css',
   },

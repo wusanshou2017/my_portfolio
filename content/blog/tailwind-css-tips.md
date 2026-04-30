@@ -1,17 +1,17 @@
 ---
-title: Tailwind CSS Tips and Tricks
+title: Tailwind CSS 实用技巧
 date: 2026-04-25
-tags: [CSS, Tailwind, Frontend]
-description: Practical tips for writing cleaner and more efficient Tailwind CSS, including custom utilities and responsive design patterns.
+tags: [CSS, Tailwind, 前端]
+description: 编写更简洁高效的 Tailwind CSS 的实用技巧，包括自定义工具类和响应式设计模式。
 ---
 
-## Why Tailwind CSS?
+## 为什么选择 Tailwind CSS？
 
-Tailwind CSS is a utility-first CSS framework that lets you build custom designs without leaving your HTML. Instead of writing custom CSS, you compose designs using pre-defined utility classes.
+Tailwind CSS 是一个实用优先的 CSS 框架，让你无需离开 HTML 即可构建自定义设计。不用写自定义 CSS，而是通过预定义的工具类组合设计。
 
-## Tip 1: Use @apply for Repeated Patterns
+## 技巧一：用 @apply 处理重复模式
 
-If you find yourself repeating the same classes, use `@apply`:
+如果你发现自己重复使用相同的类，可以用 `@apply`：
 
 ```css
 .btn-primary {
@@ -19,36 +19,36 @@ If you find yourself repeating the same classes, use `@apply`:
 }
 ```
 
-## Tip 2: Responsive Design Made Easy
+## 技巧二：响应式设计变得简单
 
-Tailwind uses mobile-first breakpoints. Use `sm:`, `md:`, `lg:` prefixes:
+Tailwind 使用移动优先的断点。使用 `sm:`、`md:`、`lg:` 前缀：
 
 ```html
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-  <!-- Responsive grid -->
+  <!-- 响应式网格 -->
 </div>
 ```
 
-## Tip 3: Use Group for Parent-Child Hover Effects
+## 技巧三：用 Group 实现父子元素悬停效果
 
-The `group` class lets you style children based on parent hover:
+`group` 类让你可以根据父元素的悬停状态来样式化子元素：
 
 ```html
 <div class="group cursor-pointer">
-  <h3 class="group-hover:text-blue-500">Hover me</h3>
+  <h3 class="group-hover:text-blue-500">悬停试试</h3>
 </div>
 ```
 
-## Tip 4: Arbitrary Values
+## 技巧四：任意值
 
-Need a specific value that's not in the default scale? Use square bracket notation:
+需要默认缩放中没有的特定值？使用方括号语法：
 
 ```html
 <div class="mt-[17px] text-[13px]">
-  <!-- Exact values -->
+  <!-- 精确值 -->
 </div>
 ```
 
-## Conclusion
+## 总结
 
-Tailwind CSS is a powerful tool that speeds up development significantly. Once you get comfortable with the utility-first approach, you'll find it hard to go back to traditional CSS.
+Tailwind CSS 是一个强大的工具，能显著提升开发效率。一旦习惯了实用优先的方式，你会发现自己很难回到传统 CSS 了。

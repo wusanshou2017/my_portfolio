@@ -1,23 +1,23 @@
 ---
-title: Building a Blog with Nuxt Content
+title: 用 Nuxt Content 搭建博客系统
 date: 2026-04-30
-tags: [Nuxt, Markdown, Blog]
-description: Learn how to create a powerful blog system using Nuxt Content, with Markdown support, automatic routing, and full-text search.
+tags: [Nuxt, Markdown, 博客]
+description: 学习如何使用 Nuxt Content 创建强大的博客系统，支持 Markdown 写作、自动路由和全文搜索。
 ---
 
-## What is Nuxt Content?
+## 什么是 Nuxt Content？
 
-`@nuxt/content` is a Nuxt module that lets you write content in Markdown files and serve them through a powerful API. It handles parsing, rendering, and searching for you.
+`@nuxt/content` 是一个 Nuxt 模块，让你可以用 Markdown 文件编写内容，并通过强大的 API 提供服务。它帮你处理了解析、渲染和搜索。
 
-## Setup
+## 安装配置
 
-First, install the module:
+首先，安装模块：
 
 ```bash
 npm install @nuxt/content
 ```
 
-Then add it to your `nuxt.config.ts`:
+然后在 `nuxt.config.ts` 中添加：
 
 ```ts
 export default defineNuxtConfig({
@@ -25,40 +25,40 @@ export default defineNuxtConfig({
 })
 ```
 
-## Writing Your First Post
+## 编写第一篇文章
 
-Create a Markdown file at `content/blog/my-first-post.md`:
+在 `content/blog/my-first-post.md` 创建 Markdown 文件：
 
 ```markdown
 ---
-title: My First Post
+title: 我的第一篇文章
 date: 2026-04-30
-tags: [tutorial]
-description: This is my first blog post.
+tags: [教程]
+description: 这是我的第一篇博客文章。
 ---
 
-# Hello World!
+# 你好世界！
 
-This is the content of my first post.
+这是第一篇文章的内容。
 ```
 
-## Displaying the Blog List
+## 展示博客列表
 
-In your blog page, use the `ContentList` component:
+在博客页面，使用 `ContentList` 组件：
 
 ```vue
 <ContentList path="/blog" v-slot="{ list }">
   <article v-for="article in list" :key="article._path">
     <h2>{{ article.title }}</h2>
     <p>{{ article.description }}</p>
-    <NuxtLink :to="article._path">Read more</NuxtLink>
+    <NuxtLink :to="article._path">阅读更多</NuxtLink>
   </article>
 </ContentList>
 ```
 
-## The Benefits
+## 优势
 
-- **No database needed** — Content is stored as Git-managed Markdown files
-- **Version control** — Every change to your content is tracked
-- **Fast** — Content is pre-rendered at build time
-- **Flexible** — Full Markdown support with Vue components inside
+- **无需数据库** — 内容以 Git 管理的 Markdown 文件存储
+- **版本控制** — 每次内容变更都有记录
+- **速度快** — 内容在构建时预渲染
+- **灵活** — 完整 Markdown 支持，可在其中嵌入 Vue 组件

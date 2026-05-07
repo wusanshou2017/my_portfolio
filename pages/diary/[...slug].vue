@@ -22,7 +22,7 @@
         </header>
 
         <div class="prose-blog">
-          <ContentRenderer :value="article" />
+          <ContentDoc />
         </div>
       </article>
 
@@ -35,12 +35,10 @@
 </template>
 
 <script setup>
-import { withoutTrailingSlash } from 'ufo'
-
 const route = useRoute()
 
 const { data: article } = await useAsyncData(`diary-${route.path}`, () =>
-  queryCollection('diary').path(withoutTrailingSlash(route.path)).first()
+  queryContent(route.path).findOne()
 )
 
 function formatDate(date) {

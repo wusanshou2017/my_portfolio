@@ -76,8 +76,8 @@
         <div v-if="latestPosts && latestPosts.length" class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <NuxtLink
             v-for="article in latestPosts"
-            :key="article.path"
-            :to="article.path"
+            :key="article._path"
+            :to="article._path"
             class="card group"
           >
             <p class="text-xs text-gray-400 mb-2">{{ formatDate(article.date) }}</p>

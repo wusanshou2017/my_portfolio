@@ -36,8 +36,8 @@
       <div v-if="filteredPosts.length" class="flex flex-col gap-6">
         <NuxtLink
           v-for="article in filteredPosts"
-          :key="article.path"
-          :to="article.path"
+          :key="article._path"
+          :to="article._path"
           class="card group block"
         >
           <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
@@ -67,7 +67,7 @@
 const selectedTag = ref(null)
 
 const { data: posts } = await useAsyncData('blog-posts', () =>
-  queryCollection('blog').order('date', 'DESC').all(),
+  queryContent('/blog').sort({ date: -1 }).find(),
   { default: () => [] }
 )
 

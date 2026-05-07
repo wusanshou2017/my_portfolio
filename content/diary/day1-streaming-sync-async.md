@@ -1,5 +1,5 @@
 ---
-title: 学习日记第4天：流式响应、同步与异步
+title: 学习日记第1天：流式响应、同步与异步
 date: 2026-05-01
 tags: [AI, LLM, Python, OpenAI]
 description: 学习了 OpenAI API 的流式调用原理，以及同步和异步的区别。

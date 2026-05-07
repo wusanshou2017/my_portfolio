@@ -54,6 +54,7 @@ const navItems = [
   { label: '首页', path: '/' },
   { label: '项目', path: '/#projects' },
   { label: '博客', path: '/blog' },
+  { label: '学习日记', path: '/diary' },
   { label: '关于', path: '/about' },
 ]
 </script>

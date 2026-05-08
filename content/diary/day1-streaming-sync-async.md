@@ -1,10 +1,9 @@
 ---
-title: 学习日记第1天：流式响应、同步与异步
-date: 2026-05-01
+title: hello-agent 学习第1天：流式响应、同步与异步
+date: 2026-05-07
 tags: [AI, LLM, Python, OpenAI]
 description: 学习了 OpenAI API 的流式调用原理，以及同步和异步的区别，深入分析了 OpenAI SDK 源码。
 ---
-
 ## 理解流式响应和同步/异步
 
 今天学习了 `Hello Agents` 书中第4章的 LLM 客户端代码，之前一直觉得流式和 async 异步有关，现在理解了它们是完全独立的两个概念。
@@ -33,7 +32,7 @@ class HelloAgentsLLM:
         apiKey = apiKey or os.getenv("LLM_API_KEY")
         baseUrl = baseUrl or os.getenv("LLM_BASE_URL")
         timeout = timeout or int(os.getenv("LLM_TIMEOUT", 60))
-        
+      
         if not all([self.model, apiKey, baseUrl]):
             raise ValueError("模型ID、API密钥和服务地址必须被提供或在.env文件中定义。")
 
@@ -51,7 +50,7 @@ class HelloAgentsLLM:
                 temperature=temperature,
                 stream=True,
             )
-            
+          
             # 处理流式响应
             print("✅ 大语言模型响应成功:")
             collected_content = []
@@ -72,12 +71,12 @@ class HelloAgentsLLM:
 if __name__ == '__main__':
     try:
         llmClient = HelloAgentsLLM()
-        
+      
         exampleMessages = [
             {"role": "system", "content": "You are a helpful assistant that writes Python code."},
             {"role": "user", "content": "写一个快速排序算法"}
         ]
-        
+      
         print("--- 调用LLM ---")
         responseText = llmClient.think(exampleMessages)
         if responseText:
@@ -191,12 +190,12 @@ if __name__ == '__main__':
 
 ## 同步版 vs 异步版的关键区别
 
-| 同步版 | 异步版 |
-|--|--|
-| `from openai import OpenAI` | `from openai import AsyncOpenAI` |
-| `def think()` | `async def think()` |
+| 同步版                                       | 异步版                                             |
+| -------------------------------------------- | -------------------------------------------------- |
+| `from openai import OpenAI`                | `from openai import AsyncOpenAI`                 |
+| `def think()`                              | `async def think()`                              |
 | `self.client.chat.completions.create(...)` | `await self.client.chat.completions.create(...)` |
-| `for chunk in response` | `async for chunk in response` |
+| `for chunk in response`                    | `async for chunk in response`                    |
 
 异步版额外加了一个 `think_batch()` 方法，用 `asyncio.gather()` 同时并发调用多个请求。
 
@@ -227,12 +226,12 @@ for chunk in response:
 
 这段代码虽然是流式输出，但它本身是**同步阻塞**的。
 
-| | 同步 (Sync) | 异步 (Async) |
-|--|--|--|
-| 特点 | 调用 API 时程序**卡住等** | 调用 API 时程序**可以继续干别的事** |
-| 关键字 | `def` | `async def` |
-| 等待方式 | 直接等结果返回 | `await` |
-| 适用场景 | 简单脚本、CLI 工具 | Web 服务器、高并发 |
+|          | 同步 (Sync)                     | 异步 (Async)                              |
+| -------- | ------------------------------- | ----------------------------------------- |
+| 特点     | 调用 API 时程序**卡住等** | 调用 API 时程序**可以继续干别的事** |
+| 关键字   | `def`                         | `async def`                             |
+| 等待方式 | 直接等结果返回                  | `await`                                 |
+| 适用场景 | 简单脚本、CLI 工具              | Web 服务器、高并发                        |
 
 ## asyncio.gather() 并发原理
 
@@ -294,11 +293,11 @@ async def create(self, ...) -> ChatCompletion | AsyncStream[ChatCompletionChunk]
 
 源码通过 Python 的 `@overload` 装饰器定义了3个签名：
 
-| overload | stream 参数 | 返回类型 |
-|--|--|--|
-| 第1个 | `stream: Optional[Literal[False]]` | `ChatCompletion`（一次性返回） |
-| 第2个 | `stream: Literal[True]` | `AsyncStream[ChatCompletionChunk]`（流式） |
-| 第3个 | `stream: bool` | `ChatCompletion | AsyncStream[...]`（联合类型） |
+| overload | stream 参数                          | 返回类型                                     |
+| -------- | ------------------------------------ | -------------------------------------------- |
+| 第1个    | `stream: Optional[Literal[False]]` | `ChatCompletion`（一次性返回）             |
+| 第2个    | `stream: Literal[True]`            | `AsyncStream[ChatCompletionChunk]`（流式） |
+| 第3个    | `stream: bool`                     | `ChatCompletion                              |
 
 实际的方法体只有一个，根据 `stream` 的值决定走哪条路。流程图：
 

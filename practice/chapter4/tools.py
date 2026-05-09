@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
-from serpapi import SerpApiClient
+from serpapi import Client
 from typing import Dict, Any
 
 def search(query: str) -> str:
@@ -25,8 +25,8 @@ def search(query: str) -> str:
             "hl": "zh-cn", # 语言代码
         }
         
-        client = SerpApiClient(params)
-        results = client.get_dict()
+        client = Client(api_key=api_key)
+        results = client.search(params=params).as_dict()
         
         # 智能解析：优先寻找最直接的答案
         if "answer_box_list" in results:

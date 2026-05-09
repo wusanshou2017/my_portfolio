@@ -18,6 +18,11 @@ logs
 .fleet
 .idea
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
 # Local env files
 .env
 .env.*

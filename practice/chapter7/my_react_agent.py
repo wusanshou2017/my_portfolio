@@ -1,3 +1,4 @@
+
 MY_REACT_PROMPT = """你是一个具备推理和行动能力的AI助手。你可以通过思考分析问题，然后调用合适的工具来获取信息，最终给出准确的答案。
 
 ## 可用工具
@@ -75,9 +76,13 @@ class MyReActAgent(ReActAgent):
             # 2. 调用LLM
             messages = [{"role": "user", "content": prompt}]
             response_text = self.llm.invoke(messages, **kwargs)
-
+            # print(f"  🤖 LLM 响应: {response_text[:]}")
             # 3. 解析输出
             thought, action = self._parse_output(response_text)
+            if thought:
+                print(f"  💭 Thought: {thought}")
+            if action:
+                print(f"  ⚡ Action: {action}")
 
             # 4. 检查完成条件
             if action and action.startswith("Finish"):
@@ -90,6 +95,7 @@ class MyReActAgent(ReActAgent):
             if action:
                 tool_name, tool_input = self._parse_action(action)
                 observation = self.tool_registry.execute_tool(tool_name, tool_input)
+                print(f"  👁️ Observation: {observation[:200]}")
                 self.current_history.append(f"Action: {action}")
                 self.current_history.append(f"Observation: {observation}")
 

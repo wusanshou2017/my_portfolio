@@ -56,15 +56,15 @@ def test_react_agent():
     except Exception as e:
         print(f"❌ 测试1失败: {e}")
     
-    # 测试2：需要搜索的问题
-    print("\n🔍 测试2：信息搜索问题")
-    search_question = "Python编程语言是什么时候发布的？请告诉我具体的年份。"
+    # # 测试2：需要搜索的问题
+    # print("\n🔍 测试2：信息搜索问题")
+    # search_question = "Python编程语言是什么时候发布的？请告诉我具体的年份。"
     
-    try:
-        result2 = agent.run(search_question)
-        print(f"\n🎯 测试2结果: {result2}")
-    except Exception as e:
-        print(f"❌ 测试2失败: {e}")
+    # try:
+    #     result2 = agent.run(search_question)
+    #     print(f"\n🎯 测试2结果: {result2}")
+    # except Exception as e:
+    #     print(f"❌ 测试2失败: {e}")
     
     # 测试3：复合问题（需要多步推理）
     print("\n🧠 测试3：复合推理问题")

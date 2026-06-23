@@ -10,8 +10,11 @@ from .tools.registry import ToolRegistry
 from .tools.base import BaseTool
 from .tools.builtin.calculator import CalculatorTool, calculate
 from .tools.builtin.search import SearchTool, search
+from .tools.builtin.memory import MemoryTool
+from .tools.builtin.rag import RAGTool
+from .memory import MemoryConfig, MemoryItem
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __all__ = [
     "HelloAgentsLLM",
     "Config",
@@ -25,6 +28,10 @@ __all__ = [
     "BaseTool",
     "CalculatorTool",
     "SearchTool",
+    "MemoryTool",
+    "RAGTool",
     "calculate",
     "search",
+    "MemoryConfig",
+    "MemoryItem",
 ]

@@ -1,8 +1,8 @@
 ---
-title: hello-agents 学习第7天：MemoryTool 记忆系统 — 自实现 vs 源码架构对比
+title: hello-agents 学习第7天：MemoryTool 记忆系统 — 自实现 vs 源码 vs LangChain 1.x
 date: 2026-06-04
-tags: [AI, LLM, Python, Agent, Memory, RAG, Qdrant, Neo4j]
-description: 手动实现 MemoryTool/RAGTool 支撑 chapter8 代码运行，并与 hello-agents 0.2.0 源码做架构层面对比分析。
+tags: [AI, LLM, Python, Agent, Memory, RAG, Qdrant, Neo4j, LangChain, LangGraph]
+description: 手动实现 MemoryTool/RAGTool 支撑 chapter8 代码运行，与 hello-agents 0.2.0 源码做架构对比，再用同一套验证脚本对比 LangChain 1.3 / LangGraph 1.2 的 Store + Checkpointer 记忆机制。
 ---
 
 ## 0. 起因
@@ -421,3 +421,225 @@ python f:\workspace\my_portfolio\practice\chapter8\01_MemoryTool_Basic_Operation
 - **重要性衰减**：时间越久、重要性越低的记忆越容易被遗忘
 
 差距主要在**检索质量**和**持久化**：关键词匹配 vs 向量+图混合检索，dict vs Qdrant+Neo4j。
+
+---
+
+## 7. 横向对比：hello-agents vs LangChain 1.x Memory 机制
+
+上面对比了「我们的实现 vs 源码」，现在拉入 **LangChain 1.3.2 + LangGraph 1.2.2** 做三方横向对比。
+环境：conda `langchain_v1`（`langchain==1.3.2`, `langgraph==1.2.2`）。
+
+### 7.1 设计哲学
+
+| | hello-agents | LangChain 1.x |
+|---|---|---|
+| **理论来源** | 认知心理学（Baddeley 工作记忆 + Atkinson-Shiffrin 多存储模型） | 软件工程（状态机 + 键值存储） |
+| **核心思路** | 模拟人类大脑的四种记忆系统 | 把记忆拆成「短期快照」+「长期存储」两层 |
+| **设计目标** | 学术教学，理解认知科学中的记忆模型 | 生产实用，可靠性和可扩展性优先 |
+
+### 7.2 记忆分类
+
+**hello-agents — 按认知功能分四类**：
+
+```
+感知记忆 (Perceptual)  ──→  工作记忆 (Working)  ──→  情景记忆 (Episodic)
+  多模态输入                  当前任务上下文              个人经历/事件
+                                                          │
+                                                          ↓
+                                                    语义记忆 (Semantic)
+                                                      知识/概念/关系
+```
+
+每种是 `BaseMemory(ABC)` 的独立子类，各自实现 add/retrieve/update/remove/forget。
+
+**LangChain 1.x — 按时间维度分两层**：
+
+```
+Checkpointer（短期）           Store（长期）
+  每个对话轮次自动快照             跨会话持久化存储
+  按 thread_id 隔离              按 namespace 分区
+  支持断点恢复                    支持向量语义检索
+```
+
+### 7.3 数据模型
+
+**hello-agents MemoryItem**（固定字段 + importance）：
+
+```python
+class MemoryItem(BaseModel):
+    memory_id: str
+    content: str
+    memory_type: Literal["working", "episodic", "semantic", "perceptual"]
+    importance: float = Field(ge=0.0, le=1.0)   # 内置重要性
+    embedding: Optional[List[float]] = None      # 嵌入向量
+    entities: List[str] = []                     # 实体（图检索用）
+```
+
+**LangGraph Store Item**（任意 JSON + namespace）：
+
+```python
+store.put(
+    namespace=("user_123", "memories"),   # 命名空间（类似目录路径）
+    key="learned_python",
+    value={                               # 任意 JSON，无 schema 约束
+        "text": "用户精通 Python",
+        "importance": 0.9,                # 用户自定义字段
+        "tags": ["skill", "programming"],
+    }
+)
+```
+
+### 7.4 遗忘与整合
+
+**hello-agents** 有完整的遗忘 + 整合机制：
+
+```python
+# 三种遗忘策略
+mem.forget(strategy="importance_based", threshold=0.3)   # 按重要性
+mem.forget(strategy="time_based", max_age_days=7)         # 按时间
+mem.forget(strategy="capacity_based", max_items=100)      # 按容量
+
+# 记忆整合：working → episodic
+mem.consolidate(from_type="working", to_type="episodic", importance_threshold=0.6)
+```
+
+**LangChain** 无内置遗忘，靠 Middleware 摘要压缩：
+
+```python
+# LangChain 1.0 用 SummarizationMiddleware 替代遗忘
+from langchain.agents.middleware import SummarizationMiddleware
+agent = create_agent(
+    model="gpt-5",
+    middleware=[SummarizationMiddleware(max_tokens=5000)]
+)
+# 或者手动删除
+store.delete(("user_123", "memories"), "outdated_key")
+```
+
+### 7.5 检索机制
+
+| | hello-agents 源码 | LangChain 1.x |
+|---|---|---|
+| **WorkingMemory** | TF-IDF (70%) + 关键词 (30%) | 无独立 WorkingMemory（靠 Checkpointer） |
+| **SemanticMemory** | Qdrant 向量 + Neo4j 图 + softmax | Store 向量检索 |
+| **多路融合** | 向量 + 图混合排序 | 单路向量检索 |
+
+---
+
+## 8. 代码验证：同一套场景跑两套系统
+
+写了 [compare_memory_langchain_vs_hello_agents.py](https://github.com/wusanshou2017/my_portfolio/blob/main/practice/chapter8/compare_memory_langchain_vs_hello_agents.py)，用相同的 5 条记忆数据分别跑 hello-agents 和 LangGraph Store。
+
+### 8.1 hello-agents 运行结果
+
+```python
+# Part 1: hello-agents MemoryManager
+
+[初始化] MemoryTool 创建完成，支持四类记忆
+
+--- 添加记忆 ---
+✅ 已添加 [working] 记忆 (id=a1b2c3d4, importance=0.8)       # 用户叫张三
+✅ 已添加 [working] 记忆 (id=e5f6g7h8, importance=0.7)       # 正在学习记忆系统对比
+✅ 已添加 [episodic] 记忆 (id=i9j0k1l2, importance=0.9)      # 2026年开始学习 AI Agent
+✅ 已添加 [semantic] 记忆 (id=m3n4o5p6, importance=0.9)      # Python是最流行的AI编程语言
+✅ 已添加 [perceptual] 记忆 (id=q7r8s9t0, importance=0.4)    # 看了记忆系统的架构图
+
+--- 搜索记忆: '用户' ---
+1. [working] (importance=0.80) 用户叫张三
+2. [working] (importance=0.70) 用户正在学习记忆系统对比
+
+--- 搜索记忆: 'Python' (min_importance=0.8) ---
+1. [semantic] (importance=0.90) Python是最流行的AI编程语言 | meta: {'concept': 'python', ...}
+
+--- 记忆统计 ---
+  working: 2 条 (平均重要性: 0.75)
+  episodic: 1 条 (平均重要性: 0.90)
+  semantic: 1 条 (平均重要性: 0.90)
+  perceptual: 1 条 (平均重要性: 0.40)
+  总计: 5 条记忆
+
+--- 遗忘 (threshold=0.5) ---         ← 自动遗忘 importance < 0.5 的记忆
+🧹 已遗忘 1 条记忆                    ← "看了架构图"(0.4) 被清理
+
+--- 遗忘后统计 ---
+  perceptual: 0 条                    ← 感知记忆被清空
+  总计: 4 条记忆
+
+--- 记忆整合 (working → episodic, threshold=0.6) ---
+🔄 已整合 2 条记忆                    ← working 中 importance≥0.6 的升级到 episodic
+
+--- 整合后统计 ---
+  episodic: 3 条 (平均重要性: 0.85)   ← 从 1 增加到 3
+  working: 2 条 (平均重要性: 0.75)     ← 源数据保留（复制不是移动）
+  总计: 6 条记忆
+```
+
+### 8.2 LangGraph Store 运行结果
+
+```python
+# Part 2: LangGraph Store + Checkpointer (LangChain 1.x)
+
+[初始化] InMemoryStore + MemorySaver 创建完成
+
+--- 存储记忆 (Store.put) ---          ← 按 namespace 分区存储
+  ✓ ('user_123', 'profile') / 'name' = 用户叫张三
+  ✓ ('user_123', 'learning') / 'current_topic' = 正在学习记忆系统对比
+  ✓ ('user_123', 'milestones') / '2026_start' = 2026年开始学习 AI Agent
+  ✓ ('user_123', 'knowledge') / 'python' = Python是最流行的AI编程语言
+
+--- 读取记忆 (Store.get) ---
+  ('user_123', 'profile') / 'name' → {'text': '用户叫张三', 'importance': 0.8}
+
+--- 搜索记忆 (Store.search by namespace) ---
+  [python] Python是最流行的AI编程语言
+
+--- 全部记忆 (Store.search all namespaces) ---
+  (profile) [name] 用户叫张三
+  (learning) [current_topic] 正在学习记忆系统对比
+  (milestones) [2026_start] 2026年开始学习 AI Agent
+  (knowledge) [python] Python是最流行的AI编程语言
+
+--- 删除记忆 (Store.delete) ---       ← 手动删除，无自动遗忘
+  ✓ 删除 ('user_123', 'learning') / 'current_topic'
+  删除后 learning 命名空间剩余: 0 条
+
+--- 尝试带向量索引的 Store ---
+  ⚠ 向量索引 Store 不可用: The api_key client option must be set...
+  （需要配置 OpenAI API Key 才能用语义检索）
+```
+
+### 8.3 核心差异对比表（验证输出）
+
+```
+维度                   hello-agents                        LangChain 1.x
+------------------------------------------------------------------------------------------
+设计理念                 认知科学模型（4种记忆类型）             工程实用（短期快照+长期存储）
+记忆分类                 working/episodic/semantic/perceptual Checkpointer(短期) + Store(长期)
+数据模型                 MemoryItem (固定字段+importance)       任意 JSON (按 namespace 组织)
+检索方式                 关键词匹配 (我们的) / 向量+图 (源码)      向量语义检索 (Store index)
+遗忘机制                 importance_based / time_based        无内置遗忘，手动 delete
+记忆整合                 working→episodic (importance×1.1)    无对应概念
+跨会话                  按 user_id 隔离                        namespace 天然跨会话
+持久化                  内存 (我们的) / Qdrant+Neo4j (源码)       InMemory / SQLite / Postgres
+重要性评分                内置 importance 字段 (0.0~1.0)         无内置，用户自定义
+时间衰减                 score = importance × time_decay      无内置
+实体关系                 源码版有 Neo4j 图检索                   无
+Agent 集成              作为 Tool，Agent 主动调用               Checkpointer 自动 + Store 手动
+外部依赖                 零依赖 (我们的) / 重依赖 (源码)           langchain + langgraph
+```
+
+---
+
+## 9. 三方总结
+
+| | 我们的实现 | hello-agents 源码 0.2.0 | LangChain 1.3 + LangGraph 1.2 |
+|---|---|---|---|
+| **定位** | 教学简化版 | 学术完整版 | 生产工程版 |
+| **记忆模型** | 统一 dict 存储 | 4 种 BaseMemory 子类 | Checkpointer + Store 两层 |
+| **检索** | 关键词匹配 | TF-IDF + Qdrant 向量 + Neo4j 图 | Store 向量语义检索 |
+| **遗忘** | importance/time 两种 | importance/time/capacity 三种 | 无（Middleware 摘要替代） |
+| **整合** | working→episodic 复制 | working→episodic 移动 + 重要性增强 | 无 |
+| **持久化** | 纯内存 | Qdrant + Neo4j + SQLite | SQLite / Postgres |
+| **代码量** | ~400 行 | ~3000+ 行 | 框架级（pip 安装） |
+
+**一句话**：hello-agents 回答的是「记忆应该分成哪几种、怎么模拟人脑」，LangChain 回答的是「怎么在生产中可靠地存取 Agent 状态」。

@@ -669,7 +669,7 @@ train_dataloader:
 ### 项目结构
 
 ```
-redetr_model/
+rtdetr_model/
 ├── scripts/
 │   ├── yolo_to_coco.py                # YOLO → COCO + 自动生成 RT-DETR 配置
 │   ├── train_yolov8.py                # YOLOv8 训练/验证

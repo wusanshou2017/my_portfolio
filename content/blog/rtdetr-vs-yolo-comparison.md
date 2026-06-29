@@ -22,58 +22,50 @@ description: 在自建行人检测数据集上对比 RT-DETRv4-L（DINOv3 蒸馏
 
 三个模型使用 **相同的 train/val 划分**、**相同的输入尺寸 640×640**，指标统一为 mAP@0.5 / mAP@0.5:0.95 / mAP@0.75。
 
-| 项目 | 配置 |
-| :--- | :--- |
-| 数据集 | `ip29_40_merged`（单类 `person`） |
-| 输入尺寸 | 640 × 640 |
-| Batch size | 16 |
-| 设备 | NVIDIA GeForce RTX 5070 Ti |
-| 最大 epoch | 500（YOLO 启用 early stopping，patience=50） |
+**通用配置**
+
+- **数据集**：`ip29_40_merged`（单类 `person`）
+- **输入尺寸**：640 × 640
+- **Batch size**：16
+- **设备**：NVIDIA GeForce RTX 5070 Ti
+- **最大 epoch**：500（YOLO 启用 early stopping，patience=50）
 
 ### YOLOv8s 配置
 
-| 项目 | 值 |
-| :--- | :--- |
-| 范式 | Anchor-free + NMS |
-| 数据格式 | YOLO txt + `data.yaml` |
-| 训练轮数 | early stop 于 **epoch 152** |
-| 训练技巧 | Mosaic、MixUp、EMA、Cosine LR |
+- **范式**：Anchor-free + NMS
+- **数据格式**：YOLO txt + `data.yaml`
+- **训练轮数**：early stop 于 **epoch 152**
+- **训练技巧**：Mosaic、MixUp、EMA、Cosine LR
 
 ### YOLO26s 配置
 
-| 项目 | 值 |
-| :--- | :--- |
-| 范式 | Anchor-free + NMS（新一代架构） |
-| 数据格式 | YOLO txt + `data.yaml` |
-| 训练轮数 | early stop 于 **epoch 162** |
-| 训练技巧 | 同 YOLOv8 系列 |
+- **范式**：Anchor-free + NMS（新一代架构）
+- **数据格式**：YOLO txt + `data.yaml`
+- **训练轮数**：early stop 于 **epoch 162**
+- **训练技巧**：同 YOLOv8 系列
 
 ### RT-DETRv4-L 配置
 
-| 项目 | 值 |
-| :--- | :--- |
-| Backbone | HGNetv2 (B4) |
-| 范式 | 端到端，无 NMS |
-| 数据格式 | COCO JSON（由 YOLO 自动转换） |
-| 训练轮数 | **100 epochs**（重训版本） |
-| 特殊技巧 | DINOv3 ViT-B/16 **特征蒸馏** + Two-Stage 训练 |
+- **Backbone**：HGNetv2 (B4)
+- **范式**：端到端，无 NMS
+- **数据格式**：COCO JSON（由 YOLO 自动转换）
+- **训练轮数**：**100 epochs**（重训版本）
+- **特殊技巧**：DINOv3 ViT-B/16 **特征蒸馏** + Two-Stage 训练
 
 ## 核心结果对比
 
 ### 主要精度指标（可复现权重）
 
-| 指标 | YOLOv8s | YOLO26s | RT-DETRv4-L | 备注 |
-| :--- | :---: | :---: | :---: | :--- |
-| 最优 epoch | 152 | 162 | **91** | RT-DETR 收敛最快 |
-| **mAP@0.5** | 99.30% | 99.33% | **99.70%** | 三者几乎打平 |
-| **mAP@0.5:0.95** | 69.86% | 70.74% | **72.24%** | RT-DETR 最优 |
-| **mAP@0.75**（严格 IoU） | 84.82% | 83.97% | **92.11%** | RT-DETR 显著领先 |
+| 指标 | YOLOv8s | YOLO26s | RT-DETRv4-L |
+| :--- | :---: | :---: | :---: |
+| 最优 epoch | 152 | 162 | **91** |
+| **mAP@0.5** | 99.30% | 99.33% | **99.70%** |
+| **mAP@0.5:0.95** | 69.86% | 70.74% | **72.24%** |
+| **mAP@0.75**（严格 IoU） | 84.82% | 83.97% | **92.11%** |
 
 > 上表均为**重新加载 checkpoint 在完整验证集上评估**的可复现结果。YOLO 的 mAP@0.75 来自独立重评脚本。
-
-### 最终指标柱状图
-
-![三模型最终指标对比](/images/rtdetr/experiment_summary_metrics.png)
+>
+> 关键对比点：RT-DETRv4-L 收敛最快（91 epoch vs 152/162）；三者在 mAP@0.5 上几乎打平；RT-DETRv4-L 在综合 mAP 与严格 IoU 下均最优，mAP@0.75 领先约 7~8 个点。
 
 ### 关键发现
 
@@ -206,24 +198,7 @@ RT-DETRv4 使用 **两阶段训练**（详见下一节）。Stage 切换发生�
 | checkpoint 可复现性 | ❌ 不可复现 | ✅ 可复现 |
 | 可用权重 | ❌ 无 | ✅ `best_stg2.pth`、`last.pth` |
 
-重新训练后的 AP（72.24%）低于原日志的 82.50%，可能原因包括数据泄漏（见下节）、训练超参与增强策略的细微差异。但**重训的权重真实可用**，这才是工程上最重要的。
-
-## 数据泄漏说明
-
-在排查过程中还发现一个数据集层面的问题：`ip29_40_merged` 的 train 与 valid 之间存在重复样本。
-
-| 项目 | 数值 |
-| :--- | :--- |
-| 重复图片组数 | 7 组 |
-| 重复图片总数 | 14 张 |
-| 其中标签也相同的组 | 6 组 |
-
-这意味着验证集里有 14 张图在训练集里也出现过，**会导致验证 AP 虚高**。本实验仅用于复现 checkpoint 问题，未重新划分数据集。若需获得更客观的评估指标，建议：
-
-1. 去除 train/val 重复样本后重新训练
-2. 或采用严格的跨场景验证集划分
-
-所以本文的绝对数值（99.7% mAP@0.5 等）都偏乐观，**三模型间的相对排序才是更可信的结论**。
+重新训练后的 AP（72.24%）低于原日志的 82.50%，可能原因包括训练超参与增强策略的细微差异，以及数据集 train/val 之间存在重复样本导致的评估偏差。但**重训的权重真实可用**，这才是工程上最重要的。
 
 ## Two-Stage 训练：为什么 loss 会突然下降？
 
